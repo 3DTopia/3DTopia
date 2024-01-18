@@ -1,30 +1,40 @@
-# 3D AIGC Triplane Latent Diffusion
+# 3DTopia
 
 ## Requirements
+
+### Install Environment for this Repository
 See `environment.yml`
 ```
-conda activate /mnt/petrelfs/share_data/lvsizhe/pt2-ae3d-env
+conda env create -f environment.yml
 ```
 
-## Usage
+### Install Second Stage Refiner
+See #TODO
 
-First train latent VAE, then train diffusion.
+### Download Checkpoints
+#TODO
+Please put the checkpoint `3dtopia_diffusion_state_dict.ckpt` under the folder `checkpoints`
 
-### VAE
+## Inference
+
+### First Stage
+Execute the following command to sample `a robot` as the first stage. Results will be located under the folder `results`
 ```
-python -u main.py --config configs/triplane_vae_conv_groupconv_shapenet_sigma2_ch6_tvloss_fixdecoder_kl5e-4_res32ch8.yaml
+python -u sample_stage1.py --text "a robot" --samples 1 --seed 0
 ```
 
-### Diffusion
-```
-python -u main.py --config ddpm_configs/triplane_ddpm_crossattention_groupconv_shapenet_sigma2_ch6_tvloss_fixdecoder_kl1e-5_scale_std_x3.yaml
-```
+Other arguments:
+- `--test_folder` controls which subfolder to put all the results;
+- `--seed` will fix random seeds; `--sampler` can be set to `ddim` for DDIM sampling (By default, we use 1000 steps DDPM sampling);
+- `--steps` controls sampling steps only for DDIM;
+- `--samples` controls number of samples;
+- `--text` is the input text;
+- `--no_video` and `--no_mcubes` surpress rendering multi-view videos and marching cubes, which are by-default enabled;
+- `--mcubes_res` controls the resolution of the 3D volumn sampled for marching cubes; One can lower this resolution to save graphics memory;
+- `--render_res` controls the resolution of the rendered video;
 
-### Calculate FID
-We use [pytorch-fid](https://github.com/mseitzer/pytorch-fid) to calculate FID. I should have installed it in our shared environment.
+### Second Stage
 ```
-python -u main.py --config ${config yaml file} --mode ${path to ckpt} --test_mode fid --test_tag ${any tag} --gpu 1
-cd log/${config file name}/lightning_logs/version_0/
-python -m pytorch_fid --save-stats FID_${any tag} fid_${any tag}.npz
-python -m pytorch_fid fid_${any tag}.npz /mnt/petrelfs/share_data/hongfangzhou.p/shapenet/fid/1view_100.npz
+threefiner if2 --mesh results/default/stage1/a_robot_0_0.ply --prompt "a robot"
 ```
+See more examples at #TODO

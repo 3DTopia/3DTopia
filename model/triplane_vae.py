@@ -55,14 +55,14 @@ class AutoencoderKL(pl.LightningModule):
 
         self.decoder_ckpt = decoder_ckpt
         self.renderer_type = renderer_type
-        if decoder_ckpt is not None:
-            assert self.renderer_type in ['nerf', 'eg3d']
-            if self.renderer_type == 'nerf':
-                self.triplane_decoder, self.triplane_render_kwargs = self.create_nerf(decoder_ckpt)
-            elif self.renderer_type == 'eg3d':
-                self.triplane_decoder, self.triplane_render_kwargs = self.create_eg3d_decoder(decoder_ckpt)
-            else:
-                raise NotImplementedError
+        # if decoder_ckpt is not None:
+        assert self.renderer_type in ['nerf', 'eg3d']
+        if self.renderer_type == 'nerf':
+            self.triplane_decoder, self.triplane_render_kwargs = self.create_nerf(decoder_ckpt)
+        elif self.renderer_type == 'eg3d':
+            self.triplane_decoder, self.triplane_render_kwargs = self.create_eg3d_decoder(decoder_ckpt)
+        else:
+            raise NotImplementedError
 
         self.psum = torch.zeros([1])
         self.psum_sq = torch.zeros([1])
@@ -253,12 +253,12 @@ class AutoencoderKL(pl.LightningModule):
 
     def create_eg3d_decoder(self, decoder_ckpt):
         triplane_decoder = Renderer_TriPlane(**self.renderer_config)
-        pretrain_pth = torch.load(decoder_ckpt, map_location='cpu')
-        pretrain_pth = {
-            '.'.join(k.split('.')[1:]): v for k, v in pretrain_pth.items()
-        }
-        # import pdb; pdb.set_trace()
-        triplane_decoder.load_state_dict(pretrain_pth)
+        if decoder_ckpt is not None:
+            pretrain_pth = torch.load(decoder_ckpt, map_location='cpu')
+            pretrain_pth = {
+                '.'.join(k.split('.')[1:]): v for k, v in pretrain_pth.items()
+            }
+            triplane_decoder.load_state_dict(pretrain_pth)
         render_kwargs = {
             'depth_resolution': 128,
             'disparity_space_sampling': False,

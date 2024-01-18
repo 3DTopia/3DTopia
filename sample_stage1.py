@@ -45,17 +45,19 @@ def add_text(rgb, caption):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", type=str, default='configs/default.yaml')
-    parser.add_argument("--ckpt", type=str, default='checkpoints/diffusion_model.ckpt')
+    parser.add_argument("--ckpt", type=str, default='checkpoints/3dtopia_diffusion_state_dict.ckpt')
     parser.add_argument("--test_folder", type=str, default="stage1")
     parser.add_argument("--seed", type=int, default=None)
     parser.add_argument("--sampler", type=str, default="ddpm")
     parser.add_argument("--samples", type=int, default=1)
     parser.add_argument("--batch_size", type=int, default=1)
     parser.add_argument("--steps", type=int, default=1000)
-    parser.add_argument("--text", nargs='+', default=None)
+    parser.add_argument("--text", nargs='+', default='a robot')
     parser.add_argument("--text_file", type=str, default=None)
-    parser.add_argument("--render_video", action='store_true', default=True)
+    parser.add_argument("--no_video", action='store_true', default=False)
     parser.add_argument("--render_res", type=int, default=128)
+    parser.add_argument("--no_mcubes", action='store_true', default=False)
+    parser.add_argument("--mcubes_res", type=int, default=128)
     args = parser.parse_args()
     if args.text is not None:
         text = [' '.join(args.text),]
@@ -147,52 +149,34 @@ def main():
         for s in range(args.samples):
             batch_size = args.batch_size
             with torch.no_grad():
-                with model.ema_scope():
-                    noise = None
-                    c = model.get_learned_conditioning([text_i])
-                    sample, _ = sampler.sample(
-                        S=args.steps,
-                        batch_size=batch_size,
-                        shape=shape,
-                        verbose=False,
-                        x_T = noise,
-                        conditioning = c.repeat(batch_size, 1, 1),
-                    )
-                    decode_res = model.decode_first_stage(sample)
+                # with model.ema_scope():
+                noise = None
+                c = model.get_learned_conditioning([text_i])
+                sample, _ = sampler.sample(
+                    S=args.steps,
+                    batch_size=batch_size,
+                    shape=shape,
+                    verbose=False,
+                    x_T = noise,
+                    conditioning = c.repeat(batch_size, 1, 1),
+                )
+                decode_res = model.decode_first_stage(sample)
 
-                    for b in range(batch_size):
-                        def render_img(v):
-                            rgb_sample, _ = model.first_stage_model.render_triplane_eg3d_decoder(
-                                decode_res[b:b+1], batch_rays_list[v:v+1].to(device), torch.zeros(1, H, H, 3).to(device),
-                            )
-                            rgb_sample = to8b(rgb_sample.detach().cpu().numpy())[0]
-                            rgb_sample = np.stack(
-                                [rgb_sample[..., 2], rgb_sample[..., 1], rgb_sample[..., 0]], -1
-                            )
-                            # rgb_sample = add_text(rgb_sample, text_i)
-                            return rgb_sample
+                for b in range(batch_size):
+                    def render_img(v):
+                        rgb_sample, _ = model.first_stage_model.render_triplane_eg3d_decoder(
+                            decode_res[b:b+1], batch_rays_list[v:v+1].to(device), torch.zeros(1, H, H, 3).to(device),
+                        )
+                        rgb_sample = to8b(rgb_sample.detach().cpu().numpy())[0]
+                        rgb_sample = np.stack(
+                            [rgb_sample[..., 2], rgb_sample[..., 1], rgb_sample[..., 0]], -1
+                        )
+                        # rgb_sample = add_text(rgb_sample, text_i)
+                        return rgb_sample
 
-                        # res = 128
-                        # c_list = torch.linspace(-1.2, 1.2, steps=res)
-                        # grid_x, grid_y, grid_z = torch.meshgrid(
-                        #     c_list, c_list, c_list, indexing='ij'
-                        # )
-                        # coords = torch.stack([grid_x, grid_y, grid_z], -1).to(decode_res.device) # 256x256x256x3
-                        # feats = sample_from_planes(
-                        #     plane_axes, decode_res[b:b+1].reshape(1, 3, -1, 256, 256), coords.reshape(1, -1, 3), padding_mode='zeros', box_warp=2.4
-                        # )
-                        # fake_dirs = torch.zeros_like(coords)
-                        # fake_dirs[..., 0] = 1
-                        # out = model.first_stage_model.triplane_decoder.decoder(feats, fake_dirs)
-                        # u = out['sigma'].reshape(res, res, res).detach().cpu().numpy()
-
-                        # # np.save(os.path.join(log_dir, f"latent_{text_connect}_{s}_{b}.npy"), sample.detach().cpu().numpy())
-
-                        # vertices, triangles = mcubes.marching_cubes(u, 10)
-                        # mcubes.export_obj(vertices, triangles, os.path.join(log_dir, f"{text_connect}_{s}_{b}.obj"))
-
+                    if not args.no_mcubes:
                         # prepare volumn for marching cube
-                        res = 128
+                        res = args.mcubes_res
                         c_list = torch.linspace(-1.2, 1.2, steps=res)
                         grid_x, grid_y, grid_z = torch.meshgrid(
                             c_list, c_list, c_list, indexing='ij'
@@ -270,16 +254,16 @@ def main():
                         mesh = trimesh.Trimesh(vertices, triangles, vertex_colors=(rgb_final * 255).astype(np.uint8))
                         trimesh.exchange.export.export_mesh(mesh, os.path.join(log_dir, f"{text_connect}_{s}_{b}.ply"), file_type='ply')
 
-                        if args.render_video:
-                            view_num = len(batch_rays_list)
-                            video_list = []
-                            for v in tqdm(range(view_num//4, view_num//4 * 3, 2)):
-                                rgb_sample = render_img(v)
-                                video_list.append(rgb_sample)
-                            imageio.mimwrite(os.path.join(log_dir, "{}_{}_{}.mp4".format(text_connect, s, b)), np.stack(video_list, 0))
-                        else:
-                            rgb_sample = render_img(104)
-                            imageio.imwrite(os.path.join(log_dir, "{}_{}_{}.jpg".format(text_connect, s, b)), rgb_sample)
+                    if not args.no_video:
+                        view_num = len(batch_rays_list)
+                        video_list = []
+                        for v in tqdm(range(view_num//4, view_num//4 * 3, 2)):
+                            rgb_sample = render_img(v)
+                            video_list.append(rgb_sample)
+                        imageio.mimwrite(os.path.join(log_dir, "{}_{}_{}.mp4".format(text_connect, s, b)), np.stack(video_list, 0))
+                    else:
+                        rgb_sample = render_img(104)
+                        imageio.imwrite(os.path.join(log_dir, "{}_{}_{}.jpg".format(text_connect, s, b)), rgb_sample)
 
 if __name__ == '__main__':
     main()
