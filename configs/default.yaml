@@ -1,0 +1,76 @@
+project:
+  name: DDPM
+
+model:
+  target: ldm.models.diffusion.ddpm.LatentDiffusion
+  params:
+    linear_start: 0.00085
+    linear_end: 0.0120
+    shift_scale: 2
+    num_timesteps_cond: 1
+    log_every_t: 200
+    timesteps: 1000
+    first_stage_key: "triplane"
+    cond_stage_key: "caption"
+    image_size: 32
+    channels: 8
+    cond_stage_trainable: false
+    conditioning_key: crossattn
+    monitor: val/loss_simple_ema
+    scale_factor: 0.5147210212065061
+    use_ema: True
+    learning_rate: 5e-5
+
+    unet_config:
+      target: ldm.modules.diffusionmodules.openaimodel.UNetModel
+      params:
+        image_size: 32
+        in_channels: 8
+        out_channels: 8
+        model_channels: 320
+        attention_resolutions: [4, 2, 1]
+        num_res_blocks: 2
+        channel_mult: [ 1, 2, 4, 4 ]
+        num_heads: 8
+        use_spatial_transformer: True
+        context_dim: 768
+        transformer_depth: 1
+        use_checkpoint: True
+        legacy: False
+
+    first_stage_config:
+      target: model.triplane_vae.AutoencoderKLRollOut
+      params:
+        embed_dim: 8
+        learning_rate: 1e-5
+        norm: False
+        renderer_type: eg3d
+        ddconfig:
+          double_z: true
+          z_channels: 8
+          resolution: 256
+          in_channels: 32
+          out_ch: 32
+          ch: 128
+          ch_mult:
+          - 2
+          - 4
+          - 4
+          - 8
+          num_res_blocks: 2
+          attn_resolutions: [32]
+          dropout: 0.0
+        lossconfig:
+          kl_weight: 1e-5
+          rec_weight: 1
+          latent_tv_weight: 2e-3
+        renderer_config:
+          rgbnet_dim: -1
+          rgbnet_width: 128
+          sigma_dim: 12
+          c_dim: 20
+        decoder_ckpt: checkpoints/triplane_decoder.pth
+
+    cond_stage_config:
+      target: ldm.modules.encoders.modules.FrozenCLIPTextEmbedder
+
