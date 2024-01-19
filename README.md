@@ -42,7 +42,8 @@ Other arguments:
 
 ### 2.2 Second Stage
 ```
-threefiner if2 --mesh results/default/stage1/a_robot_0_0.ply --prompt "a robot"
+threefiner sd --mesh results/default/stage1/a_robot_0_0.ply --prompt "a robot" --text_dir --front_dir='-y' --outdir results/default/stage1/ --save a_robot_1_0_sd.glb
+threefiner if2 --mesh results/default/stage1/a_robot_0_0_sd.glb --prompt "a robot" --outdir results/default/stage1/ --save a_robot_1_0_if2.glb
 ```
 See more examples at #TODO: link to threefiner
 
