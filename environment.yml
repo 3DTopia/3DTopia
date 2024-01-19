@@ -142,7 +142,7 @@ dependencies:
       - tokenizers==0.12.1
       - tomli==2.0.1
       - traitlets==5.9.0
-      - transformers==4.19.2
+      - transformers
       - trimesh==4.0.2
       - vit-pytorch==1.2.2
       - wandb==0.15.3
