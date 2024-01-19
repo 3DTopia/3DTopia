@@ -1,23 +1,30 @@
-# 3DTopia
+<p align="center">
+    <picture>
+    <img alt="logo" src="assets/3dtopia.jpeg" width="20%">
+    </picture>
+</p>
+<div align="center">
+  <h1>3DTopia</h1>
+  A two-stage text-to-3D generation model. The first stage uses diffusion model to quickly generate candidates. The second stage refines the assets chosen from the first stage.
+</div>
 
-## Requirements
+## 1. Quick Start
 
-### Install Environment for this Repository
+### 1.1 Install Environment for this Repository
 See `environment.yml`
 ```
 conda env create -f environment.yml
 ```
 
-### Install Second Stage Refiner
-See #TODO
+### 1.2 Install Second Stage Refiner
+See #TODO: link to threefiner
 
-### Download Checkpoints
-#TODO
-Please put the checkpoint `3dtopia_diffusion_state_dict.ckpt` under the folder `checkpoints`
+### 1.3 Download Checkpoints
+Download checkpoint from [huggingface](https://huggingface.co/hongfz16/3DTopia). Please put the checkpoint `3dtopia_diffusion_state_dict.ckpt` under the folder `checkpoints`
 
-## Inference
+## 2. Inference
 
-### First Stage
+### 2.1 First Stage
 Execute the following command to sample `a robot` as the first stage. Results will be located under the folder `results`
 ```
 python -u sample_stage1.py --text "a robot" --samples 1 --seed 0
@@ -33,8 +40,11 @@ Other arguments:
 - `--mcubes_res` controls the resolution of the 3D volumn sampled for marching cubes; One can lower this resolution to save graphics memory;
 - `--render_res` controls the resolution of the rendered video;
 
-### Second Stage
+### 2.2 Second Stage
 ```
 threefiner if2 --mesh results/default/stage1/a_robot_0_0.ply --prompt "a robot"
 ```
-See more examples at #TODO
+See more examples at #TODO: link to threefiner
+
+## 3. Acknowledgement
+We thank the community for building and open-sourcing the foundation of this work. Specifically, we want to thank [EG3D](https://github.com/NVlabs/eg3d), [Stable Diffusion](https://github.com/CompVis/stable-diffusion) for their codes. We also want to thank [Objaverse](https://objaverse.allenai.org) for the wonderful dataset.
