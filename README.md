@@ -19,7 +19,7 @@ conda env create -f environment.yml
 ```
 
 ### 1.2 Install Second Stage Refiner
-Please refer to [threefiner](https://github.com/ashawkey/threefiner) to install our second stage mesh refiner.
+Please refer to [threefiner](https://github.com/3DTopia/threefiner) to install our second stage mesh refiner.
 
 ### 1.3 Download Checkpoints
 Download checkpoint from [huggingface](https://huggingface.co/hongfz16/3DTopia). Put the checkpoint `3dtopia_diffusion_state_dict.ckpt` under the folder `checkpoints`.
@@ -43,7 +43,7 @@ Other arguments:
 - `--render_res` controls the resolution of the rendered video;
 
 ### 2.2 Second Stage
-There are two steps as the second stage refinement. Here is a simple example. Please refer to [threefiner](https://github.com/ashawkey/threefiner) for more detailed usage.
+There are two steps as the second stage refinement. Here is a simple example. Please refer to [threefiner](https://github.com/3DTopia/threefiner) for more detailed usage.
 ```bash
 # step 1
 threefiner sd --mesh results/default/stage1/a_robot_0_0.ply --prompt "a robot" --text_dir --front_dir='-y' --outdir results/default/stage2/ --save a_robot_1_0_sd.glb
