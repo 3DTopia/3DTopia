@@ -8,6 +8,8 @@
   A two-stage text-to-3D generation model. The first stage uses diffusion model to quickly generate candidates. The second stage refines the assets chosen from the first stage.
 </div>
 
+https://github.com/3DTopia/3DTopia/assets/23376858/7df9c384-0507-4fd1-807c-3e29ddff6587
+
 ## 1. Quick Start
 
 ### 1.1 Install Environment for this Repository
