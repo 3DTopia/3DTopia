@@ -38,7 +38,7 @@ Other arguments:
 - `--steps` controls sampling steps only for DDIM;
 - `--samples` controls number of samples;
 - `--text` is the input text;
-- `--no_video` and `--no_mcubes` surpress rendering multi-view videos and marching cubes, which are by-default enabled;
+- `--no_video` and `--no_mcubes` suppress rendering multi-view videos and marching cubes, which are by-default enabled;
 - `--mcubes_res` controls the resolution of the 3D volumn sampled for marching cubes; One can lower this resolution to save graphics memory;
 - `--render_res` controls the resolution of the rendered video;
 
