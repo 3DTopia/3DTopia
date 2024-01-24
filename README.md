@@ -29,10 +29,10 @@ Download checkpoint from [huggingface](https://huggingface.co/hongfz16/3DTopia).
 ### 2.1 First Stage
 Run the following command to sample `a robot` as the first stage. Results will be located under the folder `results`.
 ```bash
-python -u sample_stage1.py --text "a robot" --samples 1 --seed 0
+python -u sample_stage1.py --text "a robot" --samples 1 --sampler ddim --steps 200 --cfg_scale 7.5 --seed 0
 ```
 
-Other arguments:
+Arguments:
 - `--test_folder` controls which subfolder to put all the results;
 - `--seed` will fix random seeds; `--sampler` can be set to `ddim` for DDIM sampling (By default, we use 1000 steps DDPM sampling);
 - `--steps` controls sampling steps only for DDIM;
@@ -46,11 +46,11 @@ Other arguments:
 There are two steps as the second stage refinement. Here is a simple example. Please refer to [threefiner](https://github.com/ashawkey/threefiner) for more detailed usage.
 ```bash
 # step 1
-threefiner sd --mesh results/default/stage1/a_robot_0_0.ply --prompt "a robot" --text_dir --front_dir='-y' --outdir results/default/stage2/ --save a_robot_1_0_sd.glb
+threefiner sd --mesh results/default/stage1/a_robot_0_0.ply --prompt "a robot" --text_dir --front_dir='-y' --outdir results/default/stage2/ --save a_robot_0_0_sd.glb
 # step 2
-threefiner if2 --mesh results/default/stage2/a_robot_0_0_sd.glb --prompt "a robot" --outdir results/default/stage2/ --save a_robot_1_0_if2.glb
+threefiner if2 --mesh results/default/stage2/a_robot_0_0_sd.glb --prompt "a robot" --outdir results/default/stage2/ --save a_robot_0_0_if2.glb
 ```
-The resulting mesh can be found at `results/default/stage2/a_robot_1_0_if2.glb`
+The resulting mesh can be found at `results/default/stage2/a_robot_0_0_if2.glb`
 
 ## 3. Acknowledgement
 We thank the community for building and open-sourcing the foundation of this work. Specifically, we want to thank [EG3D](https://github.com/NVlabs/eg3d), [Stable Diffusion](https://github.com/CompVis/stable-diffusion) for their codes. We also want to thank [Objaverse](https://objaverse.allenai.org) for the wonderful dataset.

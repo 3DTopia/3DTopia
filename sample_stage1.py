@@ -58,6 +58,7 @@ def main():
     parser.add_argument("--render_res", type=int, default=128)
     parser.add_argument("--no_mcubes", action='store_true', default=False)
     parser.add_argument("--mcubes_res", type=int, default=128)
+    parser.add_argument("--cfg_scale", type=float, default=1)
     args = parser.parse_args()
     if args.text is not None:
         text = [' '.join(args.text),]
@@ -152,14 +153,28 @@ def main():
                 # with model.ema_scope():
                 noise = None
                 c = model.get_learned_conditioning([text_i])
-                sample, _ = sampler.sample(
-                    S=args.steps,
-                    batch_size=batch_size,
-                    shape=shape,
-                    verbose=False,
-                    x_T = noise,
-                    conditioning = c.repeat(batch_size, 1, 1),
-                )
+                unconditional_c = torch.zeros_like(c)
+                if args.cfg_scale != 1:
+                    assert args.sampler == 'ddim'
+                    sample, _ = sampler.sample(
+                        S=args.steps,
+                        batch_size=batch_size,
+                        shape=shape,
+                        verbose=False,
+                        x_T = noise,
+                        conditioning = c.repeat(batch_size, 1, 1),
+                        unconditional_guidance_scale=args.cfg_scale,
+                        unconditional_conditioning=unconditional_c.repeat(batch_size, 1, 1)
+                    )
+                else:
+                    sample, _ = sampler.sample(
+                        S=args.steps,
+                        batch_size=batch_size,
+                        shape=shape,
+                        verbose=False,
+                        x_T = noise,
+                        conditioning = c.repeat(batch_size, 1, 1),
+                    )
                 decode_res = model.decode_first_stage(sample)
 
                 for b in range(batch_size):
