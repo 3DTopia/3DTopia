@@ -29,6 +29,9 @@ Please refer to [threefiner](https://github.com/3DTopia/threefiner) to install o
 ### 1.3 Download Checkpoints \[Optional\]
 We have implemented automatic checkpoint download for both `gradio_demo.py` and `sample_stage1.py`. If you prefer to download manually, you may download checkpoint `3dtopia_diffusion_state_dict.ckpt` or `model.safetensors` from [huggingface](https://huggingface.co/hongfz16/3DTopia).
 
+### Q&A
+- If you encounter this error in the second stage `ImportError: /lib64/libc.so.6: version 'GLIBC_2.25' not found`, try to install a lower version of pymeshlab by `pip install pymeshlab==0.2`.
+
 ## 2. Inference
 
 ### 2.1 First Stage
