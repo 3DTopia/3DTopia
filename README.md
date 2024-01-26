@@ -11,18 +11,23 @@ https://github.com/3DTopia/3DTopia/assets/23376858/c9716cf0-6e61-4983-82b2-2e8f5
 
 </div>
 
+## News
+
+[2024/01/18] We release a text-to-3D model 3DTopia!
+
 ## 1. Quick Start
 
 ### 1.1 Install Environment for this Repository
+We recommend using Anaconda to manage the environment.
 ```bash
 conda env create -f environment.yml
 ```
 
 ### 1.2 Install Second Stage Refiner
-Please refer to [threefiner](https://github.com/3DTopia/threefiner) to install our second stage mesh refiner.
+Please refer to [threefiner](https://github.com/3DTopia/threefiner) to install our second stage mesh refiner. We have tested installing both environments together with Pytorch 1.12.0 and CUDA 11.3.
 
-### 1.3 Download Checkpoints
-Download checkpoint from [huggingface](https://huggingface.co/hongfz16/3DTopia). Put the checkpoint `3dtopia_diffusion_state_dict.ckpt` under the folder `checkpoints`.
+### 1.3 Download Checkpoints \[Optional\]
+We have implemented automatic checkpoint download for both `gradio_demo.py` and `sample_stage1.py`. If you prefer to download manually, you may download checkpoint `3dtopia_diffusion_state_dict.ckpt` or `model.safetensors` from [huggingface](https://huggingface.co/hongfz16/3DTopia).
 
 ## 2. Inference
 
@@ -33,6 +38,7 @@ python -u sample_stage1.py --text "a robot" --samples 1 --sampler ddim --steps 2
 ```
 
 Arguments:
+- `--ckpt` specifies checkpoint file path;
 - `--test_folder` controls which subfolder to put all the results;
 - `--seed` will fix random seeds; `--sampler` can be set to `ddim` for DDIM sampling (By default, we use 1000 steps DDPM sampling);
 - `--steps` controls sampling steps only for DDIM;
