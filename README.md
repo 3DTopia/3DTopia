@@ -11,6 +11,8 @@ https://github.com/3DTopia/3DTopia/assets/23376858/c9716cf0-6e61-4983-82b2-2e8f5
 
 </div>
 
+![visitors](https://visitor-badge.laobi.icu/badge?page_id=3DTopia.3DTopia)
+
 ## News
 
 [2024/01/18] We release a text-to-3D model 3DTopia!
