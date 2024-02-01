@@ -18,6 +18,8 @@ from ldm.models.diffusion.dpm_solver import DPMSolverSampler
 from utility.initialize import instantiate_from_config, get_obj_from_str
 from utility.triplane_renderer.eg3d_renderer import sample_from_planes, generate_planes
 from utility.triplane_renderer.renderer import get_rays, to8b
+from safetensors.torch import load_file
+from huggingface_hub import hf_hub_download
 
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning)
@@ -45,7 +47,7 @@ def add_text(rgb, caption):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", type=str, default='configs/default.yaml')
-    parser.add_argument("--ckpt", type=str, default='checkpoints/3dtopia_diffusion_state_dict.ckpt')
+    parser.add_argument("--ckpt", type=str, default=None)
     parser.add_argument("--test_folder", type=str, default="stage1")
     parser.add_argument("--seed", type=int, default=None)
     parser.add_argument("--sampler", type=str, default="ddpm")
@@ -60,6 +62,7 @@ def main():
     parser.add_argument("--mcubes_res", type=int, default=128)
     parser.add_argument("--cfg_scale", type=float, default=1)
     args = parser.parse_args()
+
     if args.text is not None:
         text = [' '.join(args.text),]
     elif args.text_file is not None:
@@ -84,7 +87,19 @@ def main():
     log_dir = os.path.join('results', args.config.split('/')[-1].split('.')[0], args.test_folder)
     os.makedirs(log_dir, exist_ok=True)
 
-    model = get_obj_from_str(configs.model["target"]).load_from_checkpoint(args.ckpt, map_location='cpu', strict=False, **configs.model.params)
+    if args.ckpt == None:
+        ckpt = hf_hub_download(repo_id="hongfz16/3DTopia", filename="model.safetensors")
+    else:
+        ckpt = args.ckpt
+
+    if ckpt.endswith(".ckpt"):
+        model = get_obj_from_str(configs.model["target"]).load_from_checkpoint(ckpt, map_location='cpu', strict=False, **configs.model.params)
+    elif ckpt.endswith(".safetensors"):
+        model = get_obj_from_str(configs.model["target"])(**configs.model.params)
+        model_ckpt = load_file(ckpt)
+        model.load_state_dict(model_ckpt)
+    else:
+        raise NotImplementedError
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model = model.to(device)
 
