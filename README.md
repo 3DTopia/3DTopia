@@ -3,15 +3,21 @@
     <img alt="logo" src="assets/3dtopia.jpeg" width="20%">
     </picture>
 </p>
+
 <div align="center">
   <h1>3DTopia</h1>
-  A two-stage text-to-3D generation model. The first stage uses diffusion model to quickly generate candidates. The second stage refines the assets chosen from the first stage.
+  <p>
+      A two-stage text-to-3D generation model. The first stage uses diffusion model to quickly generate candidates. The second stage refines the assets chosen from the first stage.
+  </p>
+  <img src="https://visitor-badge.laobi.icu/badge?page_id=3DTopia.3DTopia" />
+
+  <p>
+       
+  </p>
 
 https://github.com/3DTopia/3DTopia/assets/23376858/c9716cf0-6e61-4983-82b2-2e8f579bd46c
-
+    
 </div>
-
-![visitors](https://visitor-badge.laobi.icu/badge?page_id=3DTopia.3DTopia)
 
 ## News
 
