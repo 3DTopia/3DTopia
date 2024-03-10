@@ -21,6 +21,7 @@ https://github.com/3DTopia/3DTopia/assets/23376858/c9716cf0-6e61-4983-82b2-2e8f5
 
 ## News
 
+[2024/03/10] Our captions for Objaverse is released [here](https://github.com/3DTopia/3DTopia/releases).
 [2024/01/18] We release a text-to-3D model 3DTopia!
 
 ## 1. Quick Start
