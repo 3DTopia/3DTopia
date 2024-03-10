@@ -23,7 +23,19 @@ https://github.com/3DTopia/3DTopia/assets/23376858/c9716cf0-6e61-4983-82b2-2e8f5
 
 [2024/03/10] Our captions for Objaverse is released [here](https://github.com/3DTopia/3DTopia/releases).
 
+[2024/03/04] Our technical report is released [here](https://arxiv.org/pdf/2403.02234.pdf).
+
 [2024/01/18] We release a text-to-3D model 3DTopia!
+
+## Citation
+```
+@article{hong20243dtopia,
+  title={3DTopia: Large Text-to-3D Generation Model with Hybrid Diffusion Priors},
+  author={Hong, Fangzhou and Tang, Jiaxiang and Cao, Ziang and Shi, Min and Wu, Tong and Chen, Zhaoxi and Wang, Tengfei and Pan, Liang and Lin, Dahua and Liu, Ziwei},
+  journal={arXiv preprint arXiv:2403.02234},
+  year={2024}
+}
+```
 
 ## 1. Quick Start
 
